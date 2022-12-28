@@ -1,123 +1,193 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '../styles/Home.module.css'
+// Import FirebaseAuth and firebase.
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+import { Howl } from "howler";
+
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import { Arrow } from "../components/Arrow";
+import { ValidKeyPress } from "../types/validKeypress";
+import { Option } from "../types/option";
+
+import firebase from "firebase/app";
+
+enum View {
+  Start, // no arrows showing, disable controls
+  Blank, // no arrows showing, disable controls
+  Arrows, // arrows showing, enable controls
+}
+
+const CONDITIONS = [
+  [Option.Personal, Option.Familiar, Option.Unfamiliar],
+  [Option.Personal, Option.Unfamiliar, Option.Familiar],
+  [Option.Familiar, Option.Personal, Option.Unfamiliar],
+  [Option.Familiar, Option.Unfamiliar, Option.Personal],
+  [Option.Unfamiliar, Option.Personal, Option.Familiar],
+  [Option.Unfamiliar, Option.Familiar, Option.Personal],
+];
+
+const numberBetweenZeroAndFive = Math.floor(Math.random() * 5);
+const randomizedCondition = CONDITIONS[numberBetweenZeroAndFive];
 
 export default function Home() {
+  // Listen to the Firebase Auth state and set the local state.
+
+  var sound = useMemo(() => {
+    return new Howl({
+      src: ["./test.mp3"], // TODO: get user sound clip from firebase
+    });
+  }, []);
+
+  const [view, setView] = useState(View.Start);
+  const [currentCondition, setCurrentCondition] = useState<Option[]>([]);
+
+  const [songIndex, setSongIndex] = useState(0);
+  const [songStartTime, setSongStartTime] = useState(0);
+
+  const [timeoutArray, setTimeoutArray] = useState<NodeJS.Timeout[]>([]);
+
+  const leftOption = currentCondition[0];
+  const downOption = currentCondition[1];
+  const rightOption = currentCondition[2];
+
+  const clearExpiredTimeouts = useCallback(() => {
+    timeoutArray.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+  }, [timeoutArray]);
+
+  const startStudy = () => {
+    console.log("Starting study");
+    playTrack(0);
+    setView(View.Arrows);
+  };
+
+  const pauseTrack = useCallback(() => {
+    console.log("Pausing Track at time: ");
+    sound.pause();
+  }, [sound]);
+
+  const playTrack = useCallback(
+    async (time: number) => {
+      console.log("Playing track at seek time: ", time);
+      // play song at new time
+      sound.stop();
+      sound.seek(time);
+      // sound.play();
+
+      // push new timeout into array
+      const timeout = setTimeout(() => {
+        pauseTrack();
+      }, 10000);
+      setTimeoutArray([...timeoutArray, timeout]);
+      clearExpiredTimeouts();
+    },
+    [sound, pauseTrack, setTimeoutArray, timeoutArray, clearExpiredTimeouts]
+  );
+
+  const selectOption = useCallback(
+    (option: Option) => {
+      let currentTime = performance.now();
+      let nextSongIndex = songIndex + 1;
+
+      // increment songIndex to the next song playing
+      setSongIndex(nextSongIndex);
+
+      // record songStartTime - currentTime into responseTimes array
+      let responseTime = songStartTime - currentTime;
+      console.log("send option to DB", option);
+      console.log("send responseTime to DB", responseTime);
+
+      // play next song (songIndex * 10) and record this songStartTime
+      // then hide Arrow view and show Blank view and wait 3 seconds
+      playTrack(nextSongIndex * 10).then(() => {});
+      setSongStartTime(currentTime);
+      console.log("songStartTime", currentTime);
+    },
+    [playTrack, songIndex, songStartTime]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // if view is blank, don't handle keyboard events
+      if (view === View.Blank) return;
+
+      let key = event.key;
+      switch (key) {
+        case ValidKeyPress.ArrowLeft:
+          selectOption(leftOption);
+          return;
+        case ValidKeyPress.ArrowDown:
+          selectOption(downOption);
+          return;
+        case ValidKeyPress.ArrowRight:
+          selectOption(rightOption);
+          return;
+      }
+    },
+    [downOption, leftOption, rightOption, selectOption, view]
+  );
+
+  async function getCloudFunctionShit() {
+    const response = await fetch("/exportData");
+    return response.json();
+  }
+
+  const handleClick = async () => {
+    const response = await getCloudFunctionShit();
+    console.log(response);
+  };
+
+  // Set keydown listeners. Pressing arrow buttons will trigger selectOption function.
+  useEffect(() => {
+    setCurrentCondition(randomizedCondition);
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown, sound]);
+
   return (
     <>
       <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
+        <title>Baycrest Music Study</title>
+        <meta
+          name="description"
+          content="Psych study developed for Baycrest Hospital"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
+        {view === View.Start && (
+          <>
+            <div onClick={startStudy}>START</div>
+            <button onClick={handleClick}>IM TRIGGERING</button>
+          </>
+        )}
+        {view === View.Arrows && (
+          <>
+            <Arrow
+              onClick={() => selectOption(leftOption)}
+              direction="left"
+              label={leftOption}
             />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+            <Arrow
+              onClick={() => selectOption(downOption)}
+              direction="down"
+              label={downOption}
+            />
+            <Arrow
+              onClick={() => selectOption(rightOption)}
+              direction="right"
+              label={rightOption}
+            />
+          </>
+        )}
       </main>
     </>
-  )
+  );
 }

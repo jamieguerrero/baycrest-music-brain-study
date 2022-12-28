@@ -1,0 +1,44 @@
+
+.arrow {
+display: flex;
+flex-direction: column;
+align-items: center;
+cursor: pointer;
+}
+
+.arrow p {
+margin-top: 1rem;
+}
+
+.leftArrow{
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+border: 1px solid black;
+height: 100px;
+width: 100px;
+transform: rotateZ(180deg);
+}
+
+.downArrow{
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+border: 1px solid black;
+height: 100px;
+width: 100px;
+transform: rotateZ(90deg);
+}
+
+.rightArrow{
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+border: 1px solid black;
+height: 100px;
+width: 100px;
+
+}
