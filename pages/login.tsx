@@ -1,15 +1,21 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { UserContext } from "../lib/context";
 import { auth } from "../lib/firebase";
 
 export default function Login() {
   const { user } = useContext(UserContext);
+  const router = useRouter();
 
-  return <main>{user ? <SignOutButton /> : <SignInButton />}</main>;
+  useEffect(() => {
+    if (user) router.push("/");
+  }, [user, router]);
+
+  return <main>{!user ? <SignInForm /> : null}</main>;
 }
 
 // Sign in with Google button
-function SignInButton() {
+function SignInForm() {
   const [fields, setFields] = useState({
     username: "",
     password: "",
@@ -45,9 +51,4 @@ function SignInButton() {
       </button>
     </>
   );
-}
-
-// Sign out button
-function SignOutButton() {
-  return <button onClick={() => auth.signOut()}>Sign Out</button>;
 }

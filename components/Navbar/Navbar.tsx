@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 import { UserContext } from "../../lib/context";
+import { auth } from "../../lib/firebase";
 
 export function Navbar() {
-  const { user, username } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   return (
     <nav className="navbar">
@@ -14,14 +14,16 @@ export function Navbar() {
 
       {user && (
         <Link href="/admin">
-          <button>Write Posts</button>
+          <button>Admin</button>
         </Link>
       )}
 
-      {!username && (
+      {!user ? (
         <Link href="/login">
           <button>Log in</button>
         </Link>
+      ) : (
+        <button onClick={() => auth.signOut()}>Sign Out</button>
       )}
     </nav>
   );

@@ -1,21 +1,38 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
+const {Parser} = require("json2csv");
 
 exports.exportData = functions.https.onRequest((request, response) => {
-  let stuff = [];
+  const fields = ["id"];
+  const opts = {fields};
+
+  let data = [];
   const db = admin.firestore();
-  db.collection("trials")
+  db.collection("users")
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
-          console.log("doc", doc);
-          const newelement = {
+          const newElement = {
             id: doc.id,
           };
-          stuff = stuff.concat(newelement);
+          data = data.concat(newElement);
         });
-        response.send(stuff);
+
+        try {
+          const parser = new Parser(opts);
+          const csv = parser.parse(data);
+
+          response.setHeader(
+              "Content-disposition",
+              "attachment; filename=report.csv"
+          );
+          response.set("Content-Type", "text/csv");
+          response.status(200).send(csv);
+        } catch (err) {
+          console.error(err);
+        }
+
         return "";
       })
       .catch((reason) => {
