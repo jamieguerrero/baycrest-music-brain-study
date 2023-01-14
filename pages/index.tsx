@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
-
 import { Howl } from "howler";
+import FileSaver from "file-saver";
 
 import styles from "../styles/Home.module.css";
 import { UserContext } from "../lib/context";
@@ -61,14 +61,17 @@ export default function Home() {
   );
 
   async function getCloudFunctionShit() {
-    const response = await fetch("/exportData");
-    return response.json();
+    const response = await fetch("/exportData")
+      .then((response) => {
+        return response.blob();
+      })
+      .then((data) => {
+        FileSaver.saveAs(new Blob([data]), `report-${Date.now()}.csv`);
+      });
   }
 
   const handleClick = async () => {
-    console.log(user);
     const response = await getCloudFunctionShit();
-    console.log(response);
   };
 
   return (
