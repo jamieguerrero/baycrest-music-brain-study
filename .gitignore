@@ -39,3 +39,4 @@ package-lock.json
 .firebase/
 firebase-debug.log
 functions/ui-debug.log
+seed/serviceAccountKey.json

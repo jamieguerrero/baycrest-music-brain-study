@@ -18,7 +18,6 @@ export default function Login() {
   );
 }
 
-// Sign in with Google button
 function SignInForm() {
   const [fields, setFields] = useState({
     username: "",

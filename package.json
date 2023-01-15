@@ -7,7 +7,8 @@
     "build": "next build",
     "export": "next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "firestore-seed"
   },
   "dependencies": {
     "@next/font": "13.1.1",
@@ -20,6 +21,7 @@
     "file-saver": "^2.0.5",
     "firebase": "^9.15.0",
     "firebaseui": "^6.0.2",
+    "firestore-seed": "^0.0.11",
     "howler": "^2.2.3",
     "next": "13.1.1",
     "react": "18.2.0",
@@ -29,5 +31,10 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.5"
+  },
+  "firestore-seed": {
+    "databaseURL": "https://baycrest-music-brain-study-default-rtdb.firebaseio.com",
+    "credentialPath": "./seed/serviceAccountKey.json",
+    "seedDataPath": "./seed/index.js"
   }
 }
