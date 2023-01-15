@@ -1,6 +1,11 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Howl } from "howler";
-import FileSaver from "file-saver";
 
 import styles from "../styles/Home.module.css";
 import { UserContext } from "../lib/context";
@@ -60,31 +65,13 @@ export default function Home() {
     [sound, pauseTrack, setTimeoutArray, timeoutArray, clearExpiredTimeouts]
   );
 
-  async function getCloudFunctionShit() {
-    const response = await fetch("/exportData")
-      .then((response) => {
-        return response.blob();
-      })
-      .then((data) => {
-        FileSaver.saveAs(new Blob([data]), `report-${Date.now()}.csv`);
-      });
-  }
-
-  const handleClick = async () => {
-    const response = await getCloudFunctionShit();
-  };
+  useEffect(() => {}, []);
 
   return (
     <>
       <Header />
-
       <main className={styles.main}>
-        {view === View.Start && (
-          <>
-            <div onClick={startStudy}>START</div>
-            <button onClick={handleClick}>IM TRIGGERING</button>
-          </>
-        )}
+        {view === View.Start && <button onClick={startStudy}>START</button>}
         {view === View.Arrows && (
           <ArrowView condition={randomizedCondition} view={view} />
         )}

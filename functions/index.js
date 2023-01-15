@@ -9,7 +9,7 @@ exports.exportData = functions.https.onRequest((request, response) => {
 
   let data = [];
   const db = admin.firestore();
-  db.collection("users")
+  db.collection("songs")
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
