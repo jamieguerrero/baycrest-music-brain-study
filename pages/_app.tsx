@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { Navbar } from "../components/Navbar";
 import { UserContext } from "../lib/context";
 import { useUserData } from "../lib/hooks";
+import { AuthCheck } from "../components/AuthCheck";
 
 export default function App({ Component, pageProps }: AppProps) {
   const userData = useUserData();
@@ -10,7 +11,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <UserContext.Provider value={userData}>
       <Navbar />
-      <Component {...pageProps} />
+      <AuthCheck>
+        <Component {...pageProps} />
+      </AuthCheck>
     </UserContext.Provider>
   );
 }

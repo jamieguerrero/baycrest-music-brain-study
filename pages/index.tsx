@@ -18,8 +18,6 @@ const numberBetweenZeroAndFive = Math.floor(Math.random() * 5);
 const randomizedCondition = CONDITIONS[numberBetweenZeroAndFive];
 
 export default function Home() {
-  const { user } = useContext(UserContext);
-
   var sound = useMemo(() => {
     return new Howl({
       src: ["./test.mp3"], // TODO: get user sound clip from firebase
@@ -64,8 +62,6 @@ export default function Home() {
     },
     [sound, pauseTrack, setTimeoutArray, timeoutArray, clearExpiredTimeouts]
   );
-
-  useEffect(() => {}, []);
 
   return (
     <>

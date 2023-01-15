@@ -11,7 +11,11 @@ export default function Login() {
     if (user) router.push("/");
   }, [user, router]);
 
-  return <main>{!user ? <SignInForm /> : null}</main>;
+  return (
+    <main>
+      <SignInForm />
+    </main>
+  );
 }
 
 // Sign in with Google button
