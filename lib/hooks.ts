@@ -1,6 +1,6 @@
 import { auth, firestore } from "../lib/firebase";
 import type { Auth, User } from "@firebase/auth";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 // Custom hook to read  auth record and user profile doc
@@ -28,4 +28,20 @@ export function useUserData(): {
   }, [user]);
 
   return { user, username };
+}
+
+export function useFields(initialState: { [key: string]: string }) {
+  const [fields, setFields] = useState(initialState);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFields({
+      ...fields,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  return {
+    fields,
+    handleChange,
+  };
 }

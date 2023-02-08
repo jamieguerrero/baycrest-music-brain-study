@@ -1,14 +1,11 @@
 import React, {
   useCallback,
-  useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
 import { Howl } from "howler";
 
 import styles from "../styles/Home.module.css";
-import { UserContext } from "../lib/context";
 import { ArrowView } from "../components/ArrowView";
 import { CONDITIONS } from "../constants/conditions";
 import { View } from "../types/view";

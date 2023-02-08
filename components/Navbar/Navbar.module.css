@@ -1,0 +1,12 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  border-bottom: 1px solid black;
+  padding: 2rem 1rem;
+}
+
+.adminNavItems {
+  display: flex;
+  gap: 1rem;
+}

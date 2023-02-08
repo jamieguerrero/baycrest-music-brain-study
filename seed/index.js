@@ -40,35 +40,39 @@ module.exports = [
     }),
   ]),
   seed.collection("trials", [
-    seed.doc("trial1", {
+    seed.doc("trial01", {
       uid: "pilot01",
       song_id: "song01",
       round: 0,
+      response_time: 4000,
       total_elapsed_time: 4000,
       response: "familiar",
       correct: true,
     }),
-    seed.doc("trial2", {
+    seed.doc("trial02", {
       uid: "pilot01",
       song_id: "song02",
       round: 0,
-      total_elapsed_time: 4000,
+      response_time: 4000,
+      total_elapsed_time: 6000,
       response: "salient",
       correct: true,
     }),
-    seed.doc("trial3", {
+    seed.doc("trial03", {
       uid: "pilot01",
       song_id: "song03",
       round: 0,
-      total_elapsed_time: 4000,
+      response_time: 4000,
+      total_elapsed_time: 8000,
       response: "unfamiliar",
       correct: true,
     }),
-    seed.doc("trial4", {
+    seed.doc("trial04", {
       uid: "pilot01",
       song_id: "song04",
       round: 0,
-      total_elapsed_time: 4000,
+      response_time: 4000,
+      total_elapsed_time: 10000,
       response: "familiar",
       correct: true,
     }),
